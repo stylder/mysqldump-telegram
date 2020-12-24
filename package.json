@@ -1,0 +1,16 @@
+{
+  "name": "mysqldump-telegram",
+  "version": "1.0.0",
+  "description": "Bot de telegram que crea respaldos de alguna base de datos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram",
+    "mysql",
+    "mysqldump"
+  ],
+  "author": "Santiago García Cabral",
+  "license": "ISC"
+}
