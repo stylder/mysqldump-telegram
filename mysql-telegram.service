@@ -1,0 +1,22 @@
+[Unit]
+Description=Service corresponding to the satellite GPS process
+
+[Service]
+WorkingDirectory=/home/mysqldump-telegram
+
+ExecStart=/usr/bin/npm run smartone
+
+# Required on some systems
+Restart=always
+
+# Restart service after 10 seconds if node service crashes
+RestartSec=10
+
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=[ORUSS]-smartone
+
+
+[Install]
+WantedBy=multi-user.target
