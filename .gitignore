@@ -9,3 +9,4 @@ package-lock.json
 logs/*
 
 backups/*
+.DS_Store
