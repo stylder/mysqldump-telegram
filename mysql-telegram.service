@@ -1,10 +1,11 @@
+
 [Unit]
 Description=Service corresponding to the satellite GPS process
 
 [Service]
-WorkingDirectory=/home/mysqldump-telegram
+WorkingDirectory=/home/ubuntu/Workspace/mysqldump-telegram
 
-ExecStart=/usr/bin/npm run smartone
+ExecStart=/usr/bin/npm start
 
 # Required on some systems
 Restart=always
@@ -15,8 +16,17 @@ RestartSec=10
 # Output to syslog
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=[ORUSS]-smartone
+SyslogIdentifier=[ORUSS]-telegram-bot
 
 
 [Install]
 WantedBy=multi-user.target
+
+
+
+
+
+
+
+
+
