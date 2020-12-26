@@ -37,7 +37,7 @@ bot.onText(/\/backup/, async (msg) => {
     await dumpDatabase(fileName);
     const s3File = await uploadFileS3(fileName);
     const size = await getSizeBackup(pathFile);
-    const hola =  await deleteLocalBackup(pathFile);
+     //await deleteLocalBackup(pathFile);
     const mensaje = `
 Saludos 👋 sólo paso a informarte que realice un backup:
 GB: ${size}
@@ -52,9 +52,7 @@ URL: ${s3File}
 const getFileName = () => {
   const filename = moment().format("YYYY-MM-DD-HH_mm_ss");
   const ext = ".sql";
-  const dumpFile = `${filename}${ext}`;
-
-  return dumpFile;
+  return `${filename}${ext}`;
 };
 
 
@@ -93,6 +91,8 @@ const uploadFileS3 = async (fileName) => {
 
   const bucket = process.env.AWS_S3_BUCKET;
   const pathFile = `${dir}${fileName}`;
+  console.log('Upload ', pathFile);
+
   try {
     const data = await fs.readFileSync(pathFile);
     const base64data = Buffer.from(data, "binary");
