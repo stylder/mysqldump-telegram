@@ -30,10 +30,10 @@ bot.onText(/\/backup/, async (msg) => {
   try {
     const fileName = getFileName();
     const pathFile = `${process.env.DIR_BACKUP}${fileName}`;
-    //await dumpDatabase(pathFile);
+    await dumpDatabase(pathFile);
     const s3File = await uploadFileS3(pathFile, fileName);
     const size = await getSizeBackup(pathFile);
-    //await deleteLocalBackup(pathFile);
+    await deleteLocalBackup(pathFile);
     const mensaje = `
 Saludos 👋 sólo paso a informarte que realice un backup:
 GB: ${size}
@@ -95,8 +95,8 @@ const uploadFileS3 = async (pathFile, fileName) => {
     
     const options = { partSize: 5 * 1024 * 1024, queueSize: 10 };  
     const { Location } = await s3.upload(params, options).promise();
-
     return Location;
+    
   } catch (error) {
     console.error(error);
   }
