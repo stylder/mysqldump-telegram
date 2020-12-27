@@ -36,6 +36,7 @@ bot.onText(/\/backup/, async (msg) => {
     await deleteLocalBackup(pathFile);
     const mensaje = `
 Saludos 👋 sólo paso a informarte que realice un backup:
+Key: ${fileName}
 GB: ${size}
 URL: ${s3File}
     `;
