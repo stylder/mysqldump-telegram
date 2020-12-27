@@ -5,14 +5,10 @@ const moment = require("moment");
 const dotenv = require("dotenv");
 const AWS = require("aws-sdk");
 const fs = require("fs");
-
 dotenv.config();
-// replace the value below with the Telegram token you receive from @BotFather
-const token = process.env.TELEGRAM_TOKEN;
-const dir = process.env.DIR_BACKUP;
 
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
+
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 
 bot.onText(/\>/, function onLoveText(msg) {
   const command = msg.text.replace(">", "");
@@ -33,16 +29,16 @@ bot.onText(/\/backup/, async (msg) => {
 
   try {
     const fileName = getFileName();
-    const pathFile = `${dir}${fileName}`;
-    await dumpDatabase(fileName);
-    const s3File = await uploadFileS3(fileName);
+    const pathFile = `${process.env.DIR_BACKUP}${fileName}`;
+    //await dumpDatabase(pathFile);
+    const s3File = await uploadFileS3(pathFile, fileName);
     const size = await getSizeBackup(pathFile);
-     //await deleteLocalBackup(pathFile);
+    //await deleteLocalBackup(pathFile);
     const mensaje = `
 Saludos 👋 sólo paso a informarte que realice un backup:
 GB: ${size}
 URL: ${s3File}
-    `
+    `;
     bot.sendMessage(msg.chat.id, mensaje, opts);
   } catch (error) {
     bot.sendMessage(msg.chat.id, error, opts);
@@ -55,19 +51,17 @@ const getFileName = () => {
   return `${filename}${ext}`;
 };
 
-
 const getSizeBackup = async (file) => {
   const stats = fs.statSync(file);
   const fileSizeInBytes = stats.size;
-  // Convert the file size to megabytes (optional)
-  return fileSizeInBytes / (1024 * 1024* 1024);
+  return fileSizeInBytes / (1024 * 1024 * 1024);
 };
 
-const deleteLocalBackup= async(pathFile) =>{
-    return await fs.unlinkSync(pathFile);
-}
+const deleteLocalBackup = async (pathFile) => {
+  return await fs.unlinkSync(pathFile);
+};
 
-const dumpDatabase = async (dumpFile) => {
+const dumpDatabase = async (pathFile) => {
   try {
     const result = await mysqldump({
       connection: {
@@ -76,33 +70,32 @@ const dumpDatabase = async (dumpFile) => {
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
       },
-      dumpToFile: `${dir}${dumpFile}`,
+      dumpToFile: pathFile,
     });
   } catch (error) {
     return error;
   }
 };
 
-const uploadFileS3 = async (fileName) => {
+const uploadFileS3 = async (pathFile, fileName) => {
   const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_S3_ACCESS_KEY,
     secretAccessKey: process.env.AWS_S3_SECRET_KEY,
   });
 
-  const bucket = process.env.AWS_S3_BUCKET;
-  const pathFile = `${dir}${fileName}`;
-  console.log('Upload ', pathFile);
-
   try {
-    const data = await fs.readFileSync(pathFile);
-    const base64data = Buffer.from(data, "binary");
+    
+    const readStream = fs.createReadStream(pathFile);
 
     const params = {
-      Bucket: bucket,
+      Bucket: process.env.AWS_S3_BUCKET,
       Key: fileName,
-      Body: base64data,
+      Body:readStream
     };
-    const { Location } = await s3.upload(params).promise();
+    
+    const options = { partSize: 5 * 1024 * 1024, queueSize: 10 };  
+    const { Location } = await s3.upload(params, options).promise();
+
     return Location;
   } catch (error) {
     console.error(error);
