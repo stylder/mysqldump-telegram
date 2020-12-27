@@ -10,8 +10,9 @@ dotenv.config();
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
 
-bot.onText(/\>/, function onLoveText(msg) {
+bot.onText(/\>/, (msg) => {
   const command = msg.text.replace(">", "");
+  console.log(msg)
   exec(command, (_, stdout) => {
     const opts = {
       reply_to_message_id: msg.message_id,
@@ -20,7 +21,7 @@ bot.onText(/\>/, function onLoveText(msg) {
   });
 });
 
-// Matches /love
+
 bot.onText(/\/backup/, async (msg) => {
   const opts = {
     reply_to_message_id: msg.message_id,
