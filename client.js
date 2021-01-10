@@ -20,6 +20,8 @@ const downloadFile = async (filePath, fileName) => {
   s3.getObject(params).createReadStream().pipe(file);
 };
 
-const fileName = "2020-12-27-21_23_28.sql";
+const fileName =process.argv[2];
+
+console.log('Descargando el siguiente archivo:  ', fileName);
 
 downloadFile(`${process.env.DIR_BACKUP}${fileName}`,fileName);
